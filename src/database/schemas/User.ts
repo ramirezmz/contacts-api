@@ -21,4 +21,6 @@ const User = new mongoose.Schema({
   }
 })
 
+//TODO: add jwt token here
+
 export default mongoose.model('User', User);
