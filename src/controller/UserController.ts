@@ -45,6 +45,29 @@ class UserController {
       })
     }
   }
+  async findById(request: Request, response: Response) {
+    const { id } = request.params
+    if(!id) {
+      return response.status(400).json({
+        error: "Id is required"
+      })
+    }
+    try {
+      const findUserById = await User.find({_id: id})
+      if(!findUserById) {
+        return response.status(400).json({
+          error: "User not found"
+        })
+      }
+      return response.json(findUserById)
+
+    } catch(error) {
+      return response.status(500).json({
+        error: "Internal server error",
+        message: error
+      })
+    }
+  }
   async delete(request: Request, response: Response) {
     const { id } = request.params
     if(!id) {
@@ -54,7 +77,7 @@ class UserController {
     }
 
     try {
-      const findUserById =  await User.findByIdAndDelete(id)
+      const findUserById = await User.findByIdAndDelete(id)
       if(!findUserById) {
         return response.status(400).json({
           error: "User not found"
