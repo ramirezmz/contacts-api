@@ -7,5 +7,6 @@ router.get('/health', UserController.healthCheck)
 router.post('/user', UserController.create);
 router.get('/users', UserController.findAll)
 router.delete('/user/:id', UserController.delete)
+router.put('/user/:id', UserController.update)
 
 export default router

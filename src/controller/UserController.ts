@@ -71,6 +71,35 @@ class UserController {
       })
     }
   }
+  async update(request: Request, response: Response) {
+    const { id } = request.params
+    const { name, username } = request.body
+    if(!id) {
+      return response.status(400).json({
+        error: "Id is required"
+      })
+    }
+    try {
+      const findUser = await User.findByIdAndUpdate(id, {
+        name,
+        username
+      }, {new: true})
+      if(!findUser) {
+        return response.status(400).json({
+          error: "User not found"
+        })
+      }
+      return response.json({
+        message: "User updated successfully",
+        user: findUser
+      })
+    } catch(error) {
+      return response.status(500).json({
+        error: "Internal server error",
+        message: error
+      })
+    }
+  }
 }
 
 export default new UserController()
