@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User from '../database/schemas/User'
 import HttpResponse from '../helpers/http-response';
 import MissingParamError from '../utils/errors/missing-param-error';
+import bcrypt from 'bcryptjs'
 
 class UserController {
   async healthCheck(request: Request, response: Response) {
@@ -120,6 +121,29 @@ class UserController {
         error: "Internal server error",
         message: error
       })
+    }
+  }
+  async login(request: Request, response: Response) {
+    const { username, password } = request.body
+    if (!username || !password) {
+      return response.status(400).json({
+        error: "Username and password is required"
+      })
+    }
+
+    try {
+      const userExist = await User.findOne({ username })
+      if (!userExist) {
+        return response.json(HttpResponse.badRequest(new MissingParamError('User not found')))
+      }
+      const checkPassword = bcrypt.compareSync(password, userExist.password)
+      if (!checkPassword) {
+        return response.json(HttpResponse.badRequest(new MissingParamError('Password is incorrect')))
+      }
+
+      return response.json(HttpResponse.ok(userExist))
+    } catch (error) {
+      return response.json(HttpResponse.serverError())
     }
   }
 }
