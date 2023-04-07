@@ -3,6 +3,7 @@ import User from '../database/schemas/User'
 import HttpResponse from '../helpers/http-response';
 import MissingParamError from '../utils/errors/missing-param-error';
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 class UserController {
   async healthCheck(request: Request, response: Response) {
@@ -132,7 +133,7 @@ class UserController {
     }
 
     try {
-      const userExist = await User.findOne({ username })
+      const userExist = await User.findOne({ username }).select('+password')
       if (!userExist) {
         return response.json(HttpResponse.badRequest(new MissingParamError('User not found')))
       }
@@ -141,7 +142,13 @@ class UserController {
         return response.json(HttpResponse.badRequest(new MissingParamError('Password is incorrect')))
       }
 
-      return response.json(HttpResponse.ok(userExist))
+      const token = jwt.sign({ id: userExist._id }, "secret")
+
+      return response.json(HttpResponse.ok({
+        userExist,
+        token
+      }))
+
     } catch (error) {
       return response.json(HttpResponse.serverError())
     }
