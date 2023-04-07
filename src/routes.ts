@@ -7,6 +7,7 @@ router.get('/health', UserController.healthCheck)
 router.post('/register', UserController.create);
 router.get('/users', UserController.findAll)
 router.get('/user/:id', UserController.findById)
+router.get('/user', UserController.findByIdWithToken)
 router.delete('/user/:id', UserController.delete)
 router.put('/user/:id', UserController.update)
 

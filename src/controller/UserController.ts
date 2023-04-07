@@ -72,6 +72,30 @@ class UserController {
       })
     }
   }
+  async findByIdWithToken(request: Request, response: Response) {
+    const token = request.headers.authorization
+    if (!token) {
+      return response.status(401).json({
+        error: "Token is required"
+      })
+    }
+    try {
+      const payload: any = jwt.verify(token, JWT_SECRET as string)
+      const findUserById = await User.find({ _id: payload.id })
+      if (!findUserById) {
+        return response.status(400).json({
+          error: "User not found"
+        })
+      }
+      return response.json(findUserById)
+
+    } catch (error) {
+      return response.status(500).json({
+        error: "Internal server error",
+        message: error
+      })
+    }
+  }
   async delete(request: Request, response: Response) {
     const { id } = request.params
     if (!id) {
