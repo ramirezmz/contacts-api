@@ -8,17 +8,18 @@ const Contact = new mongoose.Schema({
   phone: {
     type: String,
     required: true,
-    unique: true,
   },
-  author: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+  email: {
+    type: String,
   },
   createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
     type: Date,
     default: Date.now,
   }
 })
 
-export default mongoose.model('User', Contact);
+export default mongoose.model('Contact', Contact);
