@@ -16,6 +16,11 @@ const User = new mongoose.Schema({
     required: true,
     select: false,
   },
+  contacts: [
+    {
+      type: mongoose.Schema.Types.ObjectId, ref: 'Contact'
+    }
+  ],
   createdAt: {
     type: Date,
     default: Date.now,
