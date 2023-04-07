@@ -4,7 +4,10 @@ import HttpResponse from '../helpers/http-response';
 import MissingParamError from '../utils/errors/missing-param-error';
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
 
+const { JWT_SECRET } = process.env
 class UserController {
   async healthCheck(request: Request, response: Response) {
     return response.json({
@@ -142,7 +145,7 @@ class UserController {
         return response.json(HttpResponse.badRequest(new MissingParamError('Password is incorrect')))
       }
 
-      const token = jwt.sign({ id: userExist._id }, "secret")
+      const token = jwt.sign({ id: userExist._id }, JWT_SECRET as string)
 
       return response.json(HttpResponse.ok({
         userExist,
