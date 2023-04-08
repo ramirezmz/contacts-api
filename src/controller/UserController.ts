@@ -53,16 +53,12 @@ class UserController {
   async findById(request: Request, response: Response) {
     const { id } = request.params
     if (!id) {
-      return response.status(400).json({
-        error: "Id is required"
-      })
+      return response.json(HttpResponse.badRequest(new MissingParamError('Id is required')))
     }
     try {
       const findUserById = await User.find({ _id: id })
       if (!findUserById) {
-        return response.status(400).json({
-          error: "User not found"
-        })
+        return response.json(HttpResponse.badRequest(new MissingParamError('User not found')))
       }
       return response.json(findUserById)
 
@@ -84,9 +80,7 @@ class UserController {
       const payload: any = jwt.verify(token, JWT_SECRET as string)
       const findUserById = await User.find({ _id: payload.id })
       if (!findUserById) {
-        return response.status(400).json({
-          error: "User not found"
-        })
+        return response.json(HttpResponse.badRequest(new MissingParamError('User not found')))
       }
       return response.json(findUserById)
 
@@ -100,17 +94,13 @@ class UserController {
   async delete(request: Request, response: Response) {
     const { id } = request.params
     if (!id) {
-      return response.status(400).json({
-        error: "Id is required"
-      })
+      return response.json(HttpResponse.badRequest(new MissingParamError('Id is required')))
     }
 
     try {
       const findUserById = await User.findByIdAndDelete(id)
       if (!findUserById) {
-        return response.status(400).json({
-          error: "User not found"
-        })
+        return response.json(HttpResponse.badRequest(new MissingParamError('User not found')))
       }
       return response.json({
         message: "User deleted successfully"
@@ -127,9 +117,7 @@ class UserController {
     const { id } = request.params
     const { name, username } = request.body
     if (!id) {
-      return response.status(400).json({
-        error: "Id is required"
-      })
+      return response.json(HttpResponse.badRequest(new MissingParamError('Id is required')))
     }
     try {
       const findUser = await User.findByIdAndUpdate(id, {
@@ -137,9 +125,7 @@ class UserController {
         username
       }, { new: true })
       if (!findUser) {
-        return response.status(400).json({
-          error: "User not found"
-        })
+        return response.json(HttpResponse.badRequest(new MissingParamError('User not found')))
       }
       return response.json({
         message: "User updated successfully",
@@ -155,9 +141,7 @@ class UserController {
   async login(request: Request, response: Response) {
     const { username, password } = request.body
     if (!username || !password) {
-      return response.status(400).json({
-        error: "Username and password is required"
-      })
+      return response.json(HttpResponse.badRequest(new MissingParamError('Username or password is missing')))
     }
 
     try {
@@ -185,16 +169,12 @@ class UserController {
     const { name, email, phone } = request.body
     const { id } = request.params
     if (!name || !phone || !email) {
-      return response.status(400).json({
-        error: "Name and phone is required to create a contact"
-      })
+      return response.json(HttpResponse.badRequest(new MissingParamError('Name, email or phone is missing')))
     }
     try {
       const user = await User.find({ _id: id })
       if (!user) {
-        return response.status(400).json({
-          error: "User not found"
-        })
+        return response.json(HttpResponse.badRequest(new MissingParamError('User not found')))
       }
       const newContact = await Contact.create({
         name,
@@ -231,9 +211,7 @@ class UserController {
       const payload: any = jwt.verify(token, JWT_SECRET as string)
       const findUserById = await User.find({ _id: payload.id })
       if (!findUserById) {
-        return response.status(400).json({
-          error: "User not found"
-        })
+        return response.json(HttpResponse.badRequest(new MissingParamError('User not found')))
       }
       const arrayContacts = findUserById[0].contacts
       const contacts = await Contact.find({ _id: { $in: arrayContacts } })
