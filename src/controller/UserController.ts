@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import User from '../database/schemas/User'
+import Contact from '../database/schemas/Contact'
 import HttpResponse from '../helpers/http-response';
 import MissingParamError from '../utils/errors/missing-param-error';
 import bcrypt from 'bcryptjs'
@@ -178,6 +179,71 @@ class UserController {
 
     } catch (error) {
       return response.json(HttpResponse.serverError())
+    }
+  }
+  async createContact(request: Request, response: Response) {
+    const { name, email, phone } = request.body
+    const { id } = request.params
+    if (!name || !phone || !email) {
+      return response.status(400).json({
+        error: "Name and phone is required to create a contact"
+      })
+    }
+    try {
+      const user = await User.find({ _id: id })
+      if (!user) {
+        return response.status(400).json({
+          error: "User not found"
+        })
+      }
+      const newContact = await Contact.create({
+        name,
+        email,
+        phone
+      })
+      await newContact.save()
+      await User.findByIdAndUpdate(id, {
+        $push: {
+          contacts: newContact
+        }
+      })
+
+      return response.json({
+        message: "Contact created successfully",
+        contact: newContact
+      })
+
+    } catch (error: any) {
+      return response.status(500).json({
+        error: "Internal server error",
+        message: error.message
+      })
+    }
+  }
+  async getContacts(request: Request, response: Response) {
+    const token = request.headers.authorization
+    if (!token) {
+      return response.status(401).json({
+        error: "Token is required"
+      })
+    }
+    try {
+      const payload: any = jwt.verify(token, JWT_SECRET as string)
+      const findUserById = await User.find({ _id: payload.id })
+      if (!findUserById) {
+        return response.status(400).json({
+          error: "User not found"
+        })
+      }
+      const arrayContacts = findUserById[0].contacts
+      const contacts = await Contact.find({ _id: { $in: arrayContacts } })
+      return response.json(contacts)
+
+    } catch (error) {
+      return response.status(500).json({
+        error: "Internal server error",
+        message: error
+      })
     }
   }
 }

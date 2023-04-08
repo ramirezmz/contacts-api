@@ -13,4 +13,10 @@ router.put('/user/:id', UserController.update)
 
 router.post('/auth/login', UserController.login)
 
+// create a contact
+router.post('/contact/:id', UserController.createContact)
+
+// get all users contacts
+router.get('/me/contacts', UserController.getContacts)
+
 export default router
