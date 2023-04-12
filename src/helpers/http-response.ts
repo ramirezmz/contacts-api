@@ -5,15 +5,6 @@ export default class HttpResponse {
       body: error
     }
   }
-  static created(data: any) {
-    return {
-      statusCode: 201,
-      body: {
-        message: "User created successfully",
-        data
-      }
-    }
-  }
   static serverError() {
     return {
       statusCode: 500,
@@ -22,11 +13,20 @@ export default class HttpResponse {
       }
     }
   }
-  static ok(data: any) {
+  static ok(type: string, data: any) {
     return {
       statusCode: 200,
       body: {
-        message: "Login successfully",
+        message: `${type} found successfully`,
+        data
+      }
+    }
+  }
+  static success(type: string, data: any) {
+    return {
+      statusCode: 201,
+      body: {
+        message: `${type} created successfully`,
         data
       }
     }
