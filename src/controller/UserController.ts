@@ -33,7 +33,7 @@ class UserController {
         password
       })
 
-      return response.json(HttpResponse.created(user))
+      return response.json(HttpResponse.success('User', user))
 
     } catch (error) {
       return response.json(HttpResponse.serverError())
@@ -156,7 +156,7 @@ class UserController {
 
       const token = jwt.sign({ id: userExist._id }, JWT_SECRET as string)
 
-      return response.json(HttpResponse.ok({
+      return response.json(HttpResponse.ok('Login', {
         userExist,
         token
       }))
@@ -188,10 +188,7 @@ class UserController {
         }
       })
 
-      return response.json({
-        message: "Contact created successfully",
-        contact: newContact
-      })
+      return response.json(HttpResponse.success('Contact', newContact))
 
     } catch (error: any) {
       return response.status(500).json({
@@ -215,13 +212,53 @@ class UserController {
       }
       const arrayContacts = findUserById[0].contacts
       const contacts = await Contact.find({ _id: { $in: arrayContacts } })
-      return response.json(contacts)
+      return response.json(HttpResponse.ok('Contacts', contacts))
 
     } catch (error) {
       return response.status(500).json({
         error: "Internal server error",
         message: error
       })
+    }
+  }
+  async removeContact(request: Request, response: Response) {
+    //TODO: precisa ter token para remover contato
+    const { id } = request.params
+    if (!id) {
+      return response.json(HttpResponse.badRequest(new MissingParamError('Id is required')))
+    }
+    try {
+      const contact = await Contact.findByIdAndDelete(id)
+      if (!contact) {
+        return response.json(HttpResponse.badRequest(new MissingParamError('Contact not found')))
+      }
+      return response.json(HttpResponse.ok('Contact removed', contact))
+
+    } catch (error) {
+      return response.status(500).json({
+        error: "Internal server error",
+        message: error
+      })
+    }
+  }
+  async updateContact(request: Request, response: Response) {
+    const { id } = request.params
+    const { name, email, phone } = request.body
+    if (!id) {
+      return response.json(HttpResponse.badRequest(new MissingParamError('Id is required')))
+    }
+    try {
+      const contact = await Contact.findByIdAndUpdate(id, {
+        name,
+        email,
+        phone
+      }, { new: true })
+      if (!contact) {
+        return response.json(HttpResponse.badRequest(new MissingParamError('Contact not found')))
+      }
+      return response.json(HttpResponse.ok('Contact updated', contact))
+    } catch (error) {
+      return response.json(HttpResponse.serverError())
     }
   }
 }
