@@ -19,4 +19,10 @@ router.post('/contact/:id', UserController.createContact)
 // get all users contacts
 router.get('/me/contacts', UserController.getContacts)
 
+// remove a contact
+router.delete('/me/contact/:id', UserController.removeContact)
+
+// update a contact
+router.put('/me/contact/:id', UserController.updateContact)
+
 export default router
