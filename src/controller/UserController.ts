@@ -22,7 +22,6 @@ class UserController {
     }
     try {
       const userExist = await User.findOne({ username })
-
       if (userExist) {
         return response.json(HttpResponse.badRequest(new MissingParamError('User already exists')))
       }
@@ -34,20 +33,23 @@ class UserController {
       })
 
       return response.json(HttpResponse.success('User', user))
-
     } catch (error) {
       return response.json(HttpResponse.serverError())
     }
+
   }
   async findAll(request: Request, response: Response) {
+    const token = request.headers.authorization
+    if (!token) {
+      return response.status(401).json({
+        error: "Token is required"
+      })
+    }
     try {
       const users = await User.find()
       return response.json(users)
     } catch (error) {
-      return response.status(500).json({
-        error: "Internal server error",
-        message: error
-      })
+      return response.json(HttpResponse.serverError())
     }
   }
   async findById(request: Request, response: Response) {
@@ -63,10 +65,7 @@ class UserController {
       return response.json(findUserById)
 
     } catch (error) {
-      return response.status(500).json({
-        error: "Internal server error",
-        message: error
-      })
+      return response.json(HttpResponse.serverError())
     }
   }
   async findByIdWithToken(request: Request, response: Response) {
@@ -85,10 +84,7 @@ class UserController {
       return response.json(findUserById)
 
     } catch (error) {
-      return response.status(500).json({
-        error: "Internal server error",
-        message: error
-      })
+      return response.json(HttpResponse.serverError())
     }
   }
   async delete(request: Request, response: Response) {
@@ -107,10 +103,7 @@ class UserController {
       })
 
     } catch (error) {
-      return response.status(500).json({
-        error: "Internal server error",
-        message: error
-      })
+      return response.json(HttpResponse.serverError())
     }
   }
   async update(request: Request, response: Response) {
@@ -132,10 +125,7 @@ class UserController {
         user: findUser
       })
     } catch (error) {
-      return response.status(500).json({
-        error: "Internal server error",
-        message: error
-      })
+      return response.json(HttpResponse.serverError())
     }
   }
   async login(request: Request, response: Response) {
@@ -191,10 +181,7 @@ class UserController {
       return response.json(HttpResponse.success('Contact', newContact))
 
     } catch (error: any) {
-      return response.status(500).json({
-        error: "Internal server error",
-        message: error.message
-      })
+      return response.json(HttpResponse.serverError())
     }
   }
   async getContacts(request: Request, response: Response) {
@@ -215,10 +202,7 @@ class UserController {
       return response.json(HttpResponse.ok('Contacts', contacts))
 
     } catch (error) {
-      return response.status(500).json({
-        error: "Internal server error",
-        message: error
-      })
+      return response.json(HttpResponse.serverError())
     }
   }
   async removeContact(request: Request, response: Response) {
@@ -235,10 +219,7 @@ class UserController {
       return response.json(HttpResponse.ok('Contact removed', contact))
 
     } catch (error) {
-      return response.status(500).json({
-        error: "Internal server error",
-        message: error
-      })
+      return response.json(HttpResponse.serverError())
     }
   }
   async updateContact(request: Request, response: Response) {
