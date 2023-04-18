@@ -94,4 +94,47 @@ describe('UserController', () => {
     }
     )
   })
+  describe('GET: /users', () => {
+    const moreThanOneUser = [
+      {
+        name: "test",
+        username: "test",
+        password: "test"
+      },
+      {
+        name: "test2",
+        username: "test2",
+        password: "test2"
+      }
+    ]
+    let sandbox: sinon.SinonSandbox
+    afterEach(() => {
+      sandbox.restore()
+    }
+    )
+    describe('When the token is correct', () => {
+      beforeEach(() => {
+        sandbox = sinon.createSandbox()
+        sandbox.stub(UserController, 'findAll').resolves(moreThanOneUser as any)
+      })
+      it('Should return all users', async () => {
+        const response = await UserController.findAll({} as any, {} as any)
+        assert.deepStrictEqual(response, moreThanOneUser)
+      })
+    })
+    describe('When the token is incorrect', () => {
+      beforeEach(() => {
+        sandbox = sinon.createSandbox()
+        sandbox.stub(UserController, 'findAll').resolves({
+          message: "Invalid token"
+        } as any)
+      })
+      it('Should return invalid token', async () => {
+        const response = await UserController.findAll({} as any, {} as any)
+        assert.deepStrictEqual(response, {
+          message: "Invalid token"
+        })
+      })
+    })
+  })
 })
