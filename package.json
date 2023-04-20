@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive --require ts-node/register 'src/**/*.test.ts'",
-    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/index.ts"
+    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/index.ts",
+    "build": "tsc",
+    "start": "node build/src/index.js"
   },
   "keywords": [],
   "author": "",
